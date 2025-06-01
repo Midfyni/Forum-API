@@ -1,8 +1,7 @@
 class CommentRepository {
-    async addComment(comment) {
-        console.log("");
+    async addComment(addComment) {
         throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
     }
 }
 
-module.exports = CommentRepository
+module.exports = CommentRepository;
