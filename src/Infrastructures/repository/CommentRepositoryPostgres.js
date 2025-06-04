@@ -1,5 +1,6 @@
 const InvariantError = require('../../Commons/exceptions/InvariantError');
 const NotFoundError = require("../../Commons/exceptions/NotFoundError");
+const AuthorizationError = require("../../Commons/exceptions/AuthorizationError");
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 const GetThread = require("../../Domains/threads/entities/GetThread");
@@ -12,7 +13,7 @@ class CommentRepositoryPostgres extends CommentRepository {
   }
 
   async addComment(idUser, idThread, payload) {
-    const content = payload.content;
+    const conten = payload;
     const id = `comment-${this._idGenerator()}`;
 
     const date = new Date().toISOString();
@@ -20,12 +21,47 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const query = {
       text: "INSERT INTO comments VALUES($1, $2, $3, $4, $5, $6) RETURNING id, content, user_id AS owner",
-      values: [id, content, date, idUser, idThread, isDeleted],
+      values: [id, conten, date, idUser, idThread, isDeleted],
     };
 
     const result = await this._pool.query(query);
 
     return new AddedComment(result.rows[0]);
+  }
+
+  async availabilityComment(idComment) {
+    const query = {
+      text: "SELECT * FROM comments WHERE id = $1",
+      values: [idComment],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError("Komen tidak ditemukan");
+    }
+  }
+
+  async verifyCommentOwner(commentId, idUser) {
+    const query = {
+      text: "SELECT * FROM comments WHERE user_id = $1 AND id = $2",
+      values: [idUser, commentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new AuthorizationError("anda tidak bisa mengakses resource ini");
+    }
+  }
+
+  async deleteComment(commentId) {
+    const query = {
+      text: "UPDATE comments SET is_deleted = true WHERE id = $1",
+      values: [commentId],
+    }
+
+    await this._pool.query(query);
   }
 }
 
