@@ -4,8 +4,8 @@ describe("a GetThread entities", () => {
     it("should throw error when payload did not contain needed property", () => {
         const threadPayload = {
             id: "thread-123",
-            title: "title",
-            body: "body",
+            title: "dicoding",
+            body: "a thread",
         };
 
         expect(() => new GetThread(threadPayload)).toThrow(
@@ -16,10 +16,10 @@ describe("a GetThread entities", () => {
     it("should throw error when payload did not meet data type specification", () => {
         const threadPayload = {
             id: "thread-123",
-            title: "title",
-            body: {},
-            date: true,
-            username: "dicoding",
+            title: 123,
+            body: true,
+            date: "a thread",
+            username: 321,
             comments: [],
         };
 
@@ -28,11 +28,11 @@ describe("a GetThread entities", () => {
         );
     });
 
-    it("should create getThread entity correctly", () => {
+    it("should create a getThread entity correctly", () => {
         const threadPayload = {
             id: "thread-123",
-            title: "title",
-            body: "body",
+            title: "thread title",
+            body: "thread body",
             date: new Date().toISOString(),
             username: "dicoding",
             comments: [],

@@ -1,9 +1,9 @@
-const InvariantError = require('../../Commons/exceptions/InvariantError');
 const NotFoundError = require("../../Commons/exceptions/NotFoundError");
 const AuthorizationError = require("../../Commons/exceptions/AuthorizationError");
 const AddedComment = require('../../Domains/comments/entities/AddedComment');
 const CommentRepository = require('../../Domains/comments/CommentRepository');
 const GetThread = require("../../Domains/threads/entities/GetThread");
+const GetComment = require("../../Domains/comments/entities/GetComment");
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
@@ -62,6 +62,29 @@ class CommentRepositoryPostgres extends CommentRepository {
     }
 
     await this._pool.query(query);
+  }
+
+  async getCommentsByThreadId(threadId) {
+    const query = {
+      text: `SELECT comments.*, users.username FROM comments
+      LEFT JOIN users ON users.id = comments.user_id
+      WHERE comments.thread_id = $1 ORDER BY comments.date ASC`,
+      values: [threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      return [];
+    }
+
+    return result.rows.map(
+      (comment) =>
+        new GetComment({
+          ...comment,
+          replies: [],
+        })
+    );
   }
 }
 

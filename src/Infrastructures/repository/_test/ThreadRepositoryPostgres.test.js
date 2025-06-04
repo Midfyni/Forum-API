@@ -107,8 +107,8 @@ describe("threadRepositoryPostgres", () => {
       await UsersTableTestHelper.addUser({ id: "user-123" });
       await ThreadsTableTestHelper.addThreads({
         id: "thread-123",
-        title: "some title",
-        body: "some body",
+        title: "thread title",
+        body: "thread body",
         date: mockDate,
       });
 
@@ -117,8 +117,8 @@ describe("threadRepositoryPostgres", () => {
       expect(thread).toStrictEqual(
         new GetThread({
           id: "thread-123",
-          title: "some title",
-          body: "some body",
+          title: "thread title",
+          body: "thread body",
           date: mockDate,
           username: "dicoding",
           comments: [],

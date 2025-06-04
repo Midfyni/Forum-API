@@ -8,6 +8,7 @@ const pool = require("../../../Infrastructures/database/postgres/pool");
 const ReplyRepositoryPostgres = require("../ReplyRepositoryPostgres");
 const NotFoundError = require("../../../Commons/exceptions/NotFoundError");
 const AuthorizationError = require("../../../Commons/exceptions/AuthorizationError");
+const GetReply = require("../../../Domains/replies/entities/GetReply");
 
 describe("replyRepositoryPostgres", () => {
     afterEach(async () => {
@@ -23,7 +24,7 @@ describe("replyRepositoryPostgres", () => {
     describe("addReply function", () => {
         it("should persist new reply", async () => {
             await UsersTableTestHelper.addUser({ id: 'user-123' });
-            await ThreadsTableTestHelper.addThreads({id: 'thread-123'});
+            await ThreadsTableTestHelper.addThreads({ id: 'thread-123' });
             await CommentsTableTestHelper.addComments({ id: 'comment-123' });
 
             const { content } = new AddReply({
@@ -46,7 +47,7 @@ describe("replyRepositoryPostgres", () => {
 
         it("should return added reply correctly", async () => {
             await UsersTableTestHelper.addUser({ id: "user-123" });
-            await ThreadsTableTestHelper.addThreads({id: 'thread-123'});
+            await ThreadsTableTestHelper.addThreads({ id: 'thread-123' });
             await CommentsTableTestHelper.addComments({ id: 'comment-123' });
 
             const { content } = new AddReply({
@@ -74,7 +75,7 @@ describe("replyRepositoryPostgres", () => {
     describe("verifyReplyOwner function", () => {
         it("should throw authorization error for unauthorized owner", async () => {
             await UsersTableTestHelper.addUser({ id: 'user-123' });
-            await ThreadsTableTestHelper.addThreads({id: 'thread-123'});
+            await ThreadsTableTestHelper.addThreads({ id: 'thread-123' });
             await CommentsTableTestHelper.addComments({ id: 'comment-123' });
             await RepliesTableTestHelper.addReplies({ id: 'reply-123', user_id: 'user-123' });
 
@@ -90,7 +91,7 @@ describe("replyRepositoryPostgres", () => {
 
         it("should not throw authorization error for authorized owner", async () => {
             await UsersTableTestHelper.addUser({ id: 'user-123' });
-            await ThreadsTableTestHelper.addThreads({id: 'thread-123'});
+            await ThreadsTableTestHelper.addThreads({ id: 'thread-123' });
             await CommentsTableTestHelper.addComments({ id: 'comment-123' });
             await RepliesTableTestHelper.addReplies({ id: 'reply-123', user_id: 'user-123' });
 
@@ -108,7 +109,7 @@ describe("replyRepositoryPostgres", () => {
     describe("availabilityReply function", () => {
         it("should throw notfound error for unexisted reply", async () => {
             await UsersTableTestHelper.addUser({ id: 'user-123' });
-            await ThreadsTableTestHelper.addThreads({id: 'thread-123'});
+            await ThreadsTableTestHelper.addThreads({ id: 'thread-123' });
             await CommentsTableTestHelper.addComments({ id: 'comment-123' });
             await RepliesTableTestHelper.addReplies({ id: 'reply-123' });
 
@@ -123,7 +124,7 @@ describe("replyRepositoryPostgres", () => {
 
         it("should not throw notfound error for existed reply", async () => {
             await UsersTableTestHelper.addUser({ id: 'user-123' });
-            await ThreadsTableTestHelper.addThreads({id: 'thread-123'});
+            await ThreadsTableTestHelper.addThreads({ id: 'thread-123' });
             await CommentsTableTestHelper.addComments({ id: 'comment-123' });
             await RepliesTableTestHelper.addReplies({ id: 'reply-123' });
 
@@ -140,7 +141,7 @@ describe("replyRepositoryPostgres", () => {
     describe("deleteReply function", () => {
         it("reply should have been deleted", async () => {
             await UsersTableTestHelper.addUser({ id: 'user-123' });
-            await ThreadsTableTestHelper.addThreads({id: 'thread-123'});
+            await ThreadsTableTestHelper.addThreads({ id: 'thread-123' });
             await CommentsTableTestHelper.addComments({ id: 'comment-123' });
             await RepliesTableTestHelper.addReplies({ id: 'reply-123' });
 
@@ -155,6 +156,63 @@ describe("replyRepositoryPostgres", () => {
             const reply = await RepliesTableTestHelper.findRepliesById(replyId);
 
             expect(reply[0].is_deleted).toEqual(true);
+        });
+    });
+
+    describe("getRepliesByThreadId function", () => {
+        it("should return empty array when no replies is found", async () => {
+            await UsersTableTestHelper.addUser({ id: "user-123" });
+            await ThreadsTableTestHelper.addThreads({ id: "thread-123" });
+            await CommentsTableTestHelper.addComments({ id: "comment-123" });
+
+            const replyRepository = new ReplyRepositoryPostgres(pool, () => { });
+
+            const replies = await replyRepository.getRepliesByCommentId(
+                "comment-123"
+            );
+
+            expect(replies).toHaveLength(0);
+        });
+
+        it("should return replies from a comment correctly", async () => {
+            const mockDate = new Date("2025-06-04").toISOString();
+            const mockDate2 = new Date("2025-06-04").toISOString();
+            await UsersTableTestHelper.addUser({ id: "user-123" });
+            await ThreadsTableTestHelper.addThreads({ id: "thread-123" });
+            await CommentsTableTestHelper.addComments({ id: "comment-123" });
+            await RepliesTableTestHelper.addReplies({
+                id: "reply-123",
+                content: "content reply-123",
+                date: mockDate,
+            });
+            await RepliesTableTestHelper.addReplies({
+                id: "reply-321",
+                content: "content reply-321",
+                date: mockDate2,
+            });
+            const commentId = "comment-123";
+
+            const replyRepository = new ReplyRepositoryPostgres(pool, () => { });
+
+            const replies = await replyRepository.getRepliesByCommentId(commentId);
+
+            expect(replies).toHaveLength(2);
+            expect(replies[0]).toStrictEqual(
+                new GetReply({
+                    id: "reply-123",
+                    username: "dicoding",
+                    date: mockDate,
+                    content: "content reply-123",
+                })
+            );
+            expect(replies[1]).toStrictEqual(
+                new GetReply({
+                    id: "reply-321",
+                    username: "dicoding",
+                    date: mockDate2,
+                    content: "content reply-321",
+                })
+            );
         });
     });
 });

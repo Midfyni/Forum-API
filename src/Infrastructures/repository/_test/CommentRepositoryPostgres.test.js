@@ -7,7 +7,7 @@ const pool = require("../../../Infrastructures/database/postgres/pool");
 const CommentRepositoryPostgres = require("../CommentRepositoryPostgres");
 const NotFoundError = require("../../../Commons/exceptions/NotFoundError");
 const AuthorizationError = require("../../../Commons/exceptions/AuthorizationError");
-const GetThread = require("../../../Domains/threads/entities/GetThread");
+const GetComment = require("../../../Domains/comments/entities/GetComment");
 
 describe("commentRepositoryPostgres", () => {
     afterEach(async () => {
@@ -148,6 +148,63 @@ describe("commentRepositoryPostgres", () => {
             const comment = await CommentsTableTestHelper.findCommentsById(commentId);
 
             expect(comment[0].is_deleted).toEqual(true);
+        });
+    });
+
+    describe("getCommentsByThreadId function", () => {
+        it("should return empty array when no comments is found", async () => {
+            await UsersTableTestHelper.addUser({ id: "user-123" });
+            await ThreadsTableTestHelper.addThreads({ id: "thread-123" });
+
+            const commentRepository = new CommentRepositoryPostgres(pool, () => { });
+
+            const comments = await commentRepository.getCommentsByThreadId(
+                "thread-123"
+            );
+
+            expect(comments).toHaveLength(0);
+        });
+
+        it("should return comments from a thread correctly", async () => {
+            const mockDate = new Date("2024-10-27").toISOString();
+            const mockDate2 = new Date("2024-10-28").toISOString();
+            await UsersTableTestHelper.addUser({ id: "user-123" });
+            await ThreadsTableTestHelper.addThreads({ id: "thread-123" });
+            await CommentsTableTestHelper.addComments({
+                id: "comment-123",
+                content: "comment from 123",
+                date: mockDate,
+            });
+            await CommentsTableTestHelper.addComments({
+                id: "comment-456",
+                content: "comment from 456",
+                date: mockDate2,
+            });
+            const threadId = "thread-123";
+
+            const commentRepository = new CommentRepositoryPostgres(pool, () => { });
+
+            const comments = await commentRepository.getCommentsByThreadId(threadId);
+
+            expect(comments).toHaveLength(2);
+            expect(comments[0]).toStrictEqual(
+                new GetComment({
+                    id: "comment-123",
+                    username: "dicoding",
+                    date: mockDate,
+                    content: "comment from 123",
+                    replies: [],
+                })
+            );
+            expect(comments[1]).toStrictEqual(
+                new GetComment({
+                    id: "comment-456",
+                    username: "dicoding",
+                    date: mockDate2,
+                    content: "comment from 456",
+                    replies: [],
+                })
+            );
         });
     });
 });
