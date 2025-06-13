@@ -37,4 +37,13 @@ describe('a AddThread entities', () => {
         expect(title).toEqual(payload.title);
         expect(body).toEqual(payload.body);
     });
+
+    it('should throw error when title contains more than 50 characters', () => {
+        const payload = {
+            title: 'forumapiforumapiforumapiforumapiforumapiforumapiforumapiforumapiforumapiforumapi',
+            body: 'body-123',
+        };
+
+        expect(() => new AddThread(payload)).toThrowError('ADDTHREAD.TITLE_LIMIT_CHAR');
+    });
 });

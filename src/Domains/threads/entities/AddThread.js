@@ -16,6 +16,10 @@ class AddThread {
         if (typeof title !== "string" || typeof body !== "string") {
             throw new Error("ADD_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION");
         }
+
+        if (title.length > 50) {
+            throw new Error('ADDTHREAD.TITLE_LIMIT_CHAR');
+        }
     }
 }
 
