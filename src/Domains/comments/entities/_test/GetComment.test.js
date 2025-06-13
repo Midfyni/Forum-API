@@ -20,6 +20,7 @@ describe("a GetComment entities", () => {
             date: true,
             content: "a comment",
             replies: [],
+            is_deleted: "boolean",
         };
 
         expect(() => new GetComment(commentPayload)).toThrow(
@@ -33,8 +34,8 @@ describe("a GetComment entities", () => {
             content: "a comment",
             date: new Date().toISOString(),
             username: "dicoding",
-            is_deleted: true,
             replies: [],
+            is_deleted: true,
         };
 
         const getComment = new GetComment(commentPayload);
@@ -49,6 +50,7 @@ describe("a GetComment entities", () => {
             date: new Date().toISOString(),
             content: "a comment",
             replies: [],
+            is_deleted: false,
         };
 
         const getComment = new GetComment(commentPayload);
@@ -57,6 +59,8 @@ describe("a GetComment entities", () => {
         expect(getComment.username).toEqual(commentPayload.username);
         expect(getComment.date).toEqual(commentPayload.date);
         expect(getComment.content).toEqual(commentPayload.content);
+        expect(getComment.replies).toBeInstanceOf(Array);
         expect(getComment.replies).toHaveLength(0);
+        expect(getComment.is_deleted).toEqual(commentPayload.is_deleted);
     });
 });

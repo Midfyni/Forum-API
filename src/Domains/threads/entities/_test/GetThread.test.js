@@ -21,6 +21,7 @@ describe("a GetThread entities", () => {
             date: "a thread",
             username: 321,
             comments: [],
+            owner: 421,
         };
 
         expect(() => new GetThread(threadPayload)).toThrow(
@@ -36,6 +37,7 @@ describe("a GetThread entities", () => {
             date: new Date().toISOString(),
             username: "dicoding",
             comments: [],
+            owner: "user-123"
         };
 
         const getThread = new GetThread(threadPayload);
@@ -45,6 +47,8 @@ describe("a GetThread entities", () => {
         expect(getThread.body).toEqual(threadPayload.body);
         expect(getThread.date).toEqual(threadPayload.date);
         expect(getThread.username).toEqual(threadPayload.username);
+        expect(getThread.comments).toBeInstanceOf(Array);
         expect(getThread.comments).toHaveLength(0);
+        expect(getThread.owner).toEqual(threadPayload.owner);
     });
 });

@@ -20,6 +20,7 @@ describe("a GetReply entities", () => {
             date: true,
             content: "a reply",
             replies: [],
+            is_deleted: false,
         };
 
         expect(() => new GetReply(replyPayload)).toThrow(
@@ -48,6 +49,7 @@ describe("a GetReply entities", () => {
             username: "dicoding",
             date: new Date().toISOString(),
             content: "a reply",
+            is_deleted: false,
         };
 
         const getReply = new GetReply(replyPayload);
@@ -56,5 +58,6 @@ describe("a GetReply entities", () => {
         expect(getReply.username).toEqual(replyPayload.username);
         expect(getReply.date).toEqual(replyPayload.date);
         expect(getReply.content).toEqual(replyPayload.content);
+        expect(getReply.is_deleted).toEqual(replyPayload.is_deleted);
     });
 });

@@ -25,13 +25,13 @@ describe('AddThreadUseCase', () => {
             .mockImplementation(() => Promise.resolve(mockAddedThread));
 
         // console.log("Nilai mockThreadRepository.addthread: " + mockThreadRepository.addThread);
-            /** creating use case instance */
+        /** creating use case instance */
         const getThreadUseCase = new AddThreadUseCase({
             threadRepository: mockThreadRepository,
         });
 
         // Action
-        const addedThread = await getThreadUseCase.execute('thread-123', useCasePayload);
+        const addedThread = await getThreadUseCase.execute('user-123', useCasePayload);
 
         // Assert
         expect(addedThread).toStrictEqual(new AddedThread({
@@ -39,9 +39,12 @@ describe('AddThreadUseCase', () => {
             title: useCasePayload.title,
             owner: 'owner-123',
         }));
-        expect(mockThreadRepository.addThread).toBeCalledWith('thread-123', new AddThread({
-            title: useCasePayload.title,
-            body: useCasePayload.body,
-        }));
+        expect(mockThreadRepository.addThread).toHaveBeenCalledWith(
+            "user-123",
+            new AddThread({
+                title: useCasePayload.title,
+                body: useCasePayload.body,
+            })
+        );
     });
 });

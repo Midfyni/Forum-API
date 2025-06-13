@@ -194,6 +194,7 @@ describe("commentRepositoryPostgres", () => {
                     date: mockDate,
                     content: "comment from 123",
                     replies: [],
+                    is_deleted: false,
                 })
             );
             expect(comments[1]).toStrictEqual(
@@ -203,6 +204,7 @@ describe("commentRepositoryPostgres", () => {
                     date: mockDate2,
                     content: "comment from 456",
                     replies: [],
+                    is_deleted: false,
                 })
             );
         });

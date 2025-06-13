@@ -122,6 +122,7 @@ describe("threadRepositoryPostgres", () => {
           date: mockDate,
           username: "dicoding",
           comments: [],
+          owner: "user-123",
         })
       );
     });

@@ -203,6 +203,7 @@ describe("replyRepositoryPostgres", () => {
                     username: "dicoding",
                     date: mockDate,
                     content: "content reply-123",
+                    is_deleted: false,
                 })
             );
             expect(replies[1]).toStrictEqual(
@@ -211,6 +212,7 @@ describe("replyRepositoryPostgres", () => {
                     username: "dicoding",
                     date: mockDate2,
                     content: "content reply-321",
+                    is_deleted: false,
                 })
             );
         });

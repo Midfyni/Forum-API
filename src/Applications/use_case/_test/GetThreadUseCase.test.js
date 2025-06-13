@@ -17,6 +17,7 @@ describe("GetThreadUseCase", () => {
             date: mockDate,
             username: "dicoding",
             comments: [],
+            owner: "user-123",
         });
 
         const mockGetComment1 = new GetComment({
@@ -25,6 +26,7 @@ describe("GetThreadUseCase", () => {
             date: mockDate,
             content: "a comment",
             replies: [],
+            is_deleted: false,
         });
 
         const mockGetComment2 = new GetComment({
@@ -33,6 +35,7 @@ describe("GetThreadUseCase", () => {
             date: mockDate2,
             content: "a comment",
             replies: [],
+            is_deleted: false,
         });
 
         const mockGetReply = new GetReply({
@@ -40,6 +43,7 @@ describe("GetThreadUseCase", () => {
             username: "dicoding",
             date: mockDate,
             content: "a reply",
+            is_deleted: false,
         });
 
         const mockThreadRepository = new ThreadRepository();
@@ -83,8 +87,10 @@ describe("GetThreadUseCase", () => {
                                 username: "dicoding",
                                 date: mockDate,
                                 content: "a reply",
+                                is_deleted: false,
                             }),
                         ],
+                        is_deleted: false,
                     }),
                     new GetComment({
                         id: "comment-321",
@@ -97,10 +103,13 @@ describe("GetThreadUseCase", () => {
                                 username: "dicoding",
                                 date: mockDate,
                                 content: "a reply",
+                                is_deleted: false,
                             }),
                         ],
+                        is_deleted: false,
                     }),
                 ],
+                owner: "user-123",
             })
         );
 

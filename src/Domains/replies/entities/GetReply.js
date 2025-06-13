@@ -2,20 +2,21 @@ class GetReply {
     constructor(Payload) {
         this._verifyPayload(Payload);
 
-        const { id, username, date, content } = this._mapReply(Payload);
+        const { id, username, date, content, is_deleted } = this._mapReply(Payload);
 
         this.id = id;
         this.username = username;
         this.date = date;
         this.content = content;
+        this.is_deleted = is_deleted;
     }
 
-    _verifyPayload({ id, username, date, content}) {
-        if (!id || !username || !date || !content) {
+    _verifyPayload({ id, username, date, content, is_deleted}) {
+        if (!id || !username || !date || !content || is_deleted === undefined) {
             throw new Error("GET_REPLY.NOT_CONTAIN_NEEDED_PROPERTY");
         }
 
-        if (typeof id !== "string" || typeof username !== "string" || typeof date !== "string" || typeof content !== "string") {
+        if (typeof id !== "string" || typeof username !== "string" || typeof date !== "string" || typeof content !== "string" || typeof is_deleted !== "boolean") {
             throw new Error("GET_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION");
         }
     }
