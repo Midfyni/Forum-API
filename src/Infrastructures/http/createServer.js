@@ -65,7 +65,6 @@ const createServer = async (container) => {
   ]);
 
   server.ext('onPreResponse', (request, h) => {
-    // mendapatkan konteks response dari request
     const { response } = request;
 
     if (response instanceof Error) {
