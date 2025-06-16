@@ -194,6 +194,7 @@ describe("commentRepositoryPostgres", () => {
                     date: mockDate,
                     content: "comment from 123",
                     replies: [],
+                    likeCount: 0,
                     is_deleted: false,
                 })
             );
@@ -204,6 +205,7 @@ describe("commentRepositoryPostgres", () => {
                     date: mockDate2,
                     content: "comment from 456",
                     replies: [],
+                    likeCount: 0,
                     is_deleted: false,
                 })
             );

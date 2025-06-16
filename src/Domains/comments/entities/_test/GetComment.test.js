@@ -20,6 +20,7 @@ describe("a GetComment entities", () => {
             date: true,
             content: "a comment",
             replies: [],
+            likeCount: [],
             is_deleted: "boolean",
         };
 
@@ -35,6 +36,7 @@ describe("a GetComment entities", () => {
             date: new Date().toISOString(),
             username: "dicoding",
             replies: [],
+            likeCount: 0,
             is_deleted: true,
         };
 
@@ -50,6 +52,7 @@ describe("a GetComment entities", () => {
             date: new Date().toISOString(),
             content: "a comment",
             replies: [],
+            likeCount: 0,
             is_deleted: false,
         };
 
@@ -61,6 +64,7 @@ describe("a GetComment entities", () => {
         expect(getComment.content).toEqual(commentPayload.content);
         expect(getComment.replies).toBeInstanceOf(Array);
         expect(getComment.replies).toHaveLength(0);
+        expect(getComment.likeCount).toEqual(0);
         expect(getComment.is_deleted).toEqual(commentPayload.is_deleted);
     });
 });

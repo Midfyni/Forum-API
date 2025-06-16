@@ -83,6 +83,7 @@ class CommentRepositoryPostgres extends CommentRepository {
         new GetComment({
           ...comment,
           replies: [],
+          likeCount:0,
         })
     );
   }
