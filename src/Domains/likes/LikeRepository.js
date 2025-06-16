@@ -3,7 +3,7 @@ class LikeRepository {
         throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
     }
 
-    async countCommentLike(idComment){
+    async countCommentLikes(idComment){
         throw new Error('LIKE_REPOSITORY.METHOD_NOT_IMPLEMENTED');
     }
 }

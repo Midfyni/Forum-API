@@ -39,14 +39,14 @@ class LikeRepositoryPostgres extends LikeRepository {
         const hasil = await this._pool.query(query);
     }
 
-    async countCommentLikes(commentIds) {
+    async countCommentLikes(commentId) {
         const query = {
             text: `
             SELECT * 
             FROM likes 
-            WHERE comment_id = $1
+            WHERE comment_id = $1 AND is_liked = true
         `,
-            values: [commentIds],
+            values: [commentId],
         };
 
         const result = await this._pool.query(query);

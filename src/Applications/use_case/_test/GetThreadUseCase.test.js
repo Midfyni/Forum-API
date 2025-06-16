@@ -1,6 +1,7 @@
 const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
 const CommentRepository = require("../../../Domains/comments/CommentRepository");
 const ReplyRepository = require("../../../Domains/replies/ReplyRepository");
+const LikeRepository = require('../../../Domains/likes/LikeRepository');
 const GetComment = require("../../../Domains/comments/entities/GetComment");
 const GetReply = require("../../../Domains/replies/entities/GetReply");
 const GetThread = require("../../../Domains/threads/entities/GetThread");
@@ -26,6 +27,7 @@ describe("GetThreadUseCase", () => {
             date: mockDate,
             content: "a comment",
             replies: [],
+            likeCount: 0,
             is_deleted: false,
         });
 
@@ -35,6 +37,7 @@ describe("GetThreadUseCase", () => {
             date: mockDate2,
             content: "a comment",
             replies: [],
+            likeCount: 0,
             is_deleted: false,
         });
 
@@ -49,6 +52,7 @@ describe("GetThreadUseCase", () => {
         const mockThreadRepository = new ThreadRepository();
         const mockCommentRepository = new CommentRepository();
         const mockReplyRepository = new ReplyRepository();
+        const mockLikeRepository = new LikeRepository();
 
         mockThreadRepository.checkThread = jest.fn()
             .mockImplementation(() => Promise.resolve());
@@ -56,14 +60,16 @@ describe("GetThreadUseCase", () => {
             .mockImplementation(() => Promise.resolve(mockGetThread));
         mockCommentRepository.getCommentsByThreadId = jest.fn()
             .mockImplementation(() => Promise.resolve([mockGetComment1, mockGetComment2]));
-        mockReplyRepository.getRepliesByCommentId = jest
-            .fn()
+        mockReplyRepository.getRepliesByCommentId = jest.fn()
             .mockImplementation(() => Promise.resolve([mockGetReply]));
+        mockLikeRepository.countCommentLikes = jest.fn()
+            .mockImplementation(() => Promise.resolve());
 
         const getThreadUseCase = new GetThreadUseCase({
             threadRepository: mockThreadRepository,
             commentRepository: mockCommentRepository,
             replyRepository: mockReplyRepository,
+            likeRepository: mockLikeRepository,
         });
 
         const thread = await getThreadUseCase.execute("thread-123");
@@ -90,6 +96,7 @@ describe("GetThreadUseCase", () => {
                                 is_deleted: false,
                             }),
                         ],
+                        likeCount: 0,
                         is_deleted: false,
                     }),
                     new GetComment({
@@ -106,6 +113,7 @@ describe("GetThreadUseCase", () => {
                                 is_deleted: false,
                             }),
                         ],
+                        likeCount: 0,
                         is_deleted: false,
                     }),
                 ],
