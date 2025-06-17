@@ -4,38 +4,60 @@ const LikeRepository = require('../../../Domains/likes/LikeRepository');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 
 describe('like comment likes use case', () => {
-    it('should orchestrating the set comment likes action correctly', async () => {
-        const useCaseAuth = {
-            id: 'user-123',
-        };
-        const useCaseParam = {
-            threadId: 'thread-123',
-            commentId: 'comment-234',
-        };
+    it('should create like if no existing like found', async () => {
+        const useCaseAuth = { id: 'user-123' };
+        const useCaseParam = { threadId: 'thread-123', commentId: 'comment-234' };
 
         const mockCommentRepository = new CommentRepository();
         const mockLikeRepository = new LikeRepository();
-        const mockThreadRepostiry = new ThreadRepository();
+        const mockThreadRepository = new ThreadRepository();
 
-        mockThreadRepostiry.checkThread = jest.fn()
-            .mockImplementation(() => Promise.resolve());
+        mockThreadRepository.checkThread = jest.fn(() => Promise.resolve());
+        mockCommentRepository.availabilityComment = jest.fn(() => Promise.resolve());
+        mockLikeRepository.statusCommentLike = jest.fn(() => Promise.resolve(undefined));
+        mockLikeRepository.createCommentLike = jest.fn(() => Promise.resolve());
+        mockLikeRepository.updateCommentLike = jest.fn(() => Promise.resolve());
 
-        mockCommentRepository.availabilityComment = jest.fn()
-            .mockImplementation(() => Promise.resolve());
-
-        mockLikeRepository.updateCommentLike = jest.fn()
-            .mockImplementation(() => Promise.resolve());
-
-        const updateCommentLikeUseCase = new LikeCommentUseCase({
+        const useCase = new LikeCommentUseCase({
             commentRepository: mockCommentRepository,
             likeRepository: mockLikeRepository,
-            threadRepository: mockThreadRepostiry,
+            threadRepository: mockThreadRepository,
         });
 
-        await updateCommentLikeUseCase.execute(useCaseAuth, useCaseParam);
+        await useCase.execute(useCaseAuth, useCaseParam);
 
-        expect(mockThreadRepostiry.checkThread).toBeCalledWith(useCaseParam.threadId);
+        expect(mockThreadRepository.checkThread).toBeCalledWith(useCaseParam.threadId);
         expect(mockCommentRepository.availabilityComment).toBeCalledWith(useCaseParam.commentId);
-        expect(mockLikeRepository.updateCommentLike).toBeCalledWith(useCaseAuth.id, useCaseParam.commentId);
+        expect(mockLikeRepository.statusCommentLike).toBeCalledWith(useCaseAuth.id, useCaseParam.commentId);
+        expect(mockLikeRepository.createCommentLike).toBeCalledWith(useCaseAuth.id, useCaseParam.commentId);
+        expect(mockLikeRepository.updateCommentLike).not.toBeCalled();
+    });
+
+    it('should update like if existing like is found', async () => {
+        const useCaseAuth = { id: 'user-123' };
+        const useCaseParam = { threadId: 'thread-123', commentId: 'comment-234' };
+
+        const mockCommentRepository = new CommentRepository();
+        const mockLikeRepository = new LikeRepository();
+        const mockThreadRepository = new ThreadRepository();
+
+        mockThreadRepository.checkThread = jest.fn(() => Promise.resolve());
+        mockCommentRepository.availabilityComment = jest.fn(() => Promise.resolve());
+        mockLikeRepository.statusCommentLike = jest.fn(() =>
+            Promise.resolve({ id: 'like-456', is_liked: true })
+        );
+        mockLikeRepository.createCommentLike = jest.fn(() => Promise.resolve());
+        mockLikeRepository.updateCommentLike = jest.fn(() => Promise.resolve());
+
+        const useCase = new LikeCommentUseCase({
+            commentRepository: mockCommentRepository,
+            likeRepository: mockLikeRepository,
+            threadRepository: mockThreadRepository,
+        });
+
+        await useCase.execute(useCaseAuth, useCaseParam);
+
+        expect(mockLikeRepository.createCommentLike).not.toBeCalled();
+        expect(mockLikeRepository.updateCommentLike).toBeCalledWith('like-456', false);
     });
 });

@@ -11,7 +11,13 @@ class LikeCommentUseCase {
 
     await this._threadRepository.checkThread(threadId);
     await this._commentRepository.availabilityComment(commentId);
-    await this._likeRepository.updateCommentLike(id, commentId);
+    const likes = await this._likeRepository.statusCommentLike(id, commentId);
+
+    if (!likes) {
+      await this._likeRepository.createCommentLike(id, commentId)
+    } else {
+      await this._likeRepository.updateCommentLike(likes.id, !likes.is_liked);
+    }
   }
 }
 

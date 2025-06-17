@@ -9,31 +9,34 @@ class LikeRepositoryPostgres extends LikeRepository {
         this._idGenerator = idGenerator;
     }
 
-    async updateCommentLike(userId, commentId) {
-        const id_generated = `like-${this._idGenerator()}`;
-
-        let query = {
+    async statusCommentLike(userId, commentId) {
+        const query = {
             text: "SELECT id, is_liked FROM likes WHERE user_id = $1 AND comment_id = $2",
             values: [userId, commentId],
         };
 
         const result = await this._pool.query(query);
 
-        if (result.rows.length < 1) {
-            const is_like = true;
+        return result.rows[0];
+    }
 
-            query = {
-                text: "INSERT INTO likes VALUES($1, $2, $3, $4)",
-                values: [id_generated, is_like, userId, commentId],
-            };
-        } else {
-            const { id, is_liked } = result.rows[0];
-            const is_like = !is_liked;
+    async createCommentLike(userId, commentId) {
+        const id_generated = `like-${this._idGenerator()}`;
 
-            query = {
-                text: "UPDATE likes SET is_liked = $2 WHERE id = $1",
-                values: [id, is_like],
-            };
+        const is_like = true;
+
+        const query = {
+            text: "INSERT INTO likes VALUES($1, $2, $3, $4)",
+            values: [id_generated, is_like, userId, commentId],
+        };
+
+        await this._pool.query(query);
+    }
+
+    async updateCommentLike(id, is_like) {
+        const query = {
+            text: "UPDATE likes SET is_liked = $2 WHERE id = $1",
+            values: [id, is_like],
         };
 
         const hasil = await this._pool.query(query);
