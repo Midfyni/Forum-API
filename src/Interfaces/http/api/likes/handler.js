@@ -9,6 +9,7 @@ class LikesHandler {
 
     async putLikeHandler(request, h) {
 
+
         const likeCommentUseCase = this._container.getInstance(LikeCommentUseCase.name);
 
         await likeCommentUseCase.execute(request.auth.credentials, request.params);
@@ -19,6 +20,7 @@ class LikesHandler {
 
         response.code(200);
         return response;
+
 
     }
 }
